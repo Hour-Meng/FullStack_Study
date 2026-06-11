@@ -1,0 +1,28 @@
+ul{
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+a{
+    text-decoration: none;
+    padding: 10px;
+}
+
+#logo{
+    width: 200px;
+    height: 200px;
+}
+
+.main-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+a:hover{
+    color: green;
+    background-color: red;
+    border-radius: 2%;
+}
