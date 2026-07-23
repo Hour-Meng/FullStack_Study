@@ -1,0 +1,74 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: #f7f9fc;
+    color: #1f2937;
+}
+
+.container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 24px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+h1 {
+    margin-top: 0;
+}
+
+section {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+}
+
+code {
+    background: #eef2ff;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.link {
+    display: inline-block;
+    margin-top: 8px;
+    text-decoration: none;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.link:hover {
+    background: #1d4ed8;
+}
+
+/* CSS3 Hyperlink Presentation draft properties (mostly unsupported in browsers) */
+.link-target {
+    target: new front;
+}
+
+.link-target-name {
+    target-name: new;
+}
+
+.link-target-new {
+    target-new: window;
+}
+
+.link-target-position {
+    target-position: front;
+}
+
+.modern {
+    background: #059669;
+}
+
+.modern:hover {
+    background: #047857;
+}

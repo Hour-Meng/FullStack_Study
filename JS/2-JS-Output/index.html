@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+    <div id="innerHTML"></div>
+    <div id="innerText"></div>
+    <div id="innerContent"></div> 
+    <button onclick="window"></button>
+
+    <script>
+        alert("Warning!")
+        console.log('testing log'); // show in your console, this log can't be seen by user. Something like a print statement
+        
+        document.getElementById('innerHTML').innerHTML = "Hello inner html" + "<br>" + "New line";
+        document.getElementById('innerText').innerText = "Hello inner text"; // what's the diff? inner text will not work if you want to add <br>
+        document.getElementById('innerContent').textContent = "This is text content"
+
+        // print statement
+        document.write(`
+            <table border="1">
+                <tbody>
+                <tr>
+                    <th>Name</th>
+                    <th>Age</th>
+                </tr>
+                
+                <tr>
+                    <th>Hour</th>
+                    <th>Meng</th>
+                </tr>
+                </tbody>
+
+            </table>
+        `)
+    </script>
+
+</body>
+</html>

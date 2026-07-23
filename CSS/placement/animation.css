@@ -1,0 +1,26 @@
+@keyframes ring-the-bell{
+    0% {
+        transform: rotate(0deg);
+    }
+    20% {
+        transform: rotate(12deg);
+    }
+    40% {
+        transform: rotate(-12deg);
+    }
+    60% {
+        transform: rotate(8deg);
+    }
+    80% {
+        transform: rotate(-8deg);
+    }
+    100% {
+        transform: rotate(0deg);
+    }
+}
+
+.ring {
+    display: inline-block;
+    transform-origin: top center;
+    animation: ring-the-bell 0.8s ease-in-out infinite;
+}

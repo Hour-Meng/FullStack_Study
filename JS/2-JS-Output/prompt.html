@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <div id="result"></div>
+
+    
+    <script>
+        let a = prompt('Please Insert Number a: ');
+        let b = prompt('Please Insert Number b: ');
+        a, b = Number(a), Number(b);
+        let operator = prompt(' + or - or * or /');
+        let result;
+
+        switch(operator){
+            case '+': 
+                result = a + b;
+                break;
+            
+            case '-':
+                result = a - b;
+                break;
+
+            case '*':
+                result = a * b;
+                break;
+
+            case '/':
+                if (b===0){
+                    result = 'Error'
+                }
+                else{
+
+                    result = a/b;
+                }
+                break;
+
+        }
+
+        document.getElementById('result').innerText = result
+        document.write(result)
+
+    </script>
+
+
+</body>
+</html>

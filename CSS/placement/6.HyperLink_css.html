@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>HyperLink CSS Demo</title>
+	<link rel="stylesheet" href="HyperLink.css">
+</head>
+<body>
+	<main class="container">
+		<h1>HyperLink CSS: target Properties Demo</h1>
+		<p>
+			The examples below show how <code>target</code>, <code>target-name</code>,
+			<code>target-new</code>, and <code>target-position</code> are written in CSS.
+			These properties are from an old CSS3 draft and are not supported in modern browsers.
+		</p>
+
+		<section>
+			<h2>1) target (shorthand)</h2>
+			<p>Shorthand for <code>target-name</code>, <code>target-new</code>, and <code>target-position</code>.</p>
+			<a class="link link-target" href="https://example.com">Open using target shorthand (demo)</a>
+		</section>
+
+		<section>
+			<h2>2) target-name</h2>
+			<p>Specifies the target destination name for the link.</p>
+			<a class="link link-target-name" href="https://developer.mozilla.org">Open using target-name (demo)</a>
+		</section>
+
+		<section>
+			<h2>3) target-new</h2>
+			<p>Specifies whether to open in a new window or existing context.</p>
+			<a class="link link-target-new" href="https://www.w3.org">Open using target-new (demo)</a>
+		</section>
+
+		<section>
+			<h2>4) target-position</h2>
+			<p>Specifies where the destination should be placed.</p>
+			<a class="link link-target-position" href="https://www.wikipedia.org">Open using target-position (demo)</a>
+		</section>
+
+		<section>
+			<h2>Modern, Supported Method</h2>
+			<p>
+				Use HTML <code>target</code> attribute for real browser behavior:
+				<code>_blank</code>, <code>_self</code>, <code>_parent</code>, <code>_top</code>.
+			</p>
+			<a class="link modern" href="https://example.com" target="_blank" rel="noopener noreferrer">
+				Open in new tab (supported)
+			</a>
+		</section>
+	</main>
+</body>
+</html>

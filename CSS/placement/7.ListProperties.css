@@ -1,0 +1,68 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    background: #f8fafc;
+    color: #111827;
+}
+
+.container {
+    max-width: 900px;
+    margin: 32px auto;
+    background: #ffffff;
+    padding: 24px;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 24px;
+}
+
+th,
+td {
+    border: 1px solid #d1d5db;
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background: #e2e8f0;
+}
+
+section {
+    margin-top: 18px;
+    padding-top: 12px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.demo {
+    background: #f1f5f9;
+    padding: 10px 16px;
+    border-radius: 8px;
+}
+
+/* list-style shorthand: type position image */
+.shorthand {
+    list-style: square inside;
+}
+
+.type-example {
+    list-style-type: upper-roman;
+
+}
+
+.position-example {
+    list-style-type: disc;
+    list-style-position: inside;
+}
+
+.image-example {
+    list-style-image: url("https://upload.wikimedia.org/wikipedia/commons/c/ce/Transparent.gif");
+    list-style-type: circle;
+}
