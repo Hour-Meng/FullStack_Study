@@ -28,8 +28,8 @@
                         </div>
 
                         <div class="mt-3">
-                            <label for="Time" class="form-label">Check in time</label>
-                            <input type="time" id="Time" class="form-control" onchange="calculatePrice()">
+                            <label for="value1" class="form-label">Check in time</label>
+                            <input type="time" id="value1" class="form-control" onchange="calculatePrice()">
                         </div>
 
                         <div class="mt-3">
@@ -38,9 +38,15 @@
                         </div>
 
                         <div class="mt-3">
-                            <label for="result" class="form-label">Price</label>
-                            <input type="text" id="result" class="form-control" readonly>
+                            <label for="riel" class="form-label">Price in Riel</label>
+                            <input type="text" id="riel" class="form-control" readonly>
                         </div>
+
+                        <div class="mt-3">
+                            <label for="dollar" class="form-label">Price in Dollar</label>
+                            <input type="text" id="dollar" class="form-control" readonly>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -48,45 +54,60 @@
     </div>
 
     <script>
-        function calculatePrice() {
-            let vehicle = document.getElementById('vehicle').value;
-            let checkIn = document.getElementById('Time').value;
-            let checkOut = document.getElementById('value2').value;
-            let result = document.getElementById('result');
 
-            if (!checkIn || !checkOut) {
-                result.value = '';
-                return;
+        function calculatePrice(){
+            let checkIn = document.getElementById('value1').value
+            let checkOut = document.getElementById('value2').value
+            let riel = document.getElementById('riel');
+            let dollar = document.getElementById('dollar');
+            let option = document.getElementById('vehicle').value;
+
+
+            if (!checkIn || !checkOut){
+                riel.value = '';
+                dollar.value = '';
+                return ;
             }
 
             let start = new Date(`1970-01-01T${checkIn}:00`);
             let end = new Date(`1970-01-01T${checkOut}:00`);
-            let totalHours = (end - start) / (1000 * 60 * 60);
 
-            if (totalHours < 0) {
-                totalHours += 24;
+            let totalTime = (end - start) / (1000 * 60 * 60)
+
+            console.log(totalTime)
+
+            if (totalTime <= 0){
+                totalTime += 24;
             }
 
-            let price = 0;
-
-            if (vehicle === 'car') {
-                if (totalHours <= 8) {
-                    price = 500;
-                } else {
-                    price = 1000;
+            
+            if ( totalTime < 8){
+                if (option.value === 'moto'){
+                    riel.value = totalTime * 200;
                 }
-            } else if (vehicle === 'moto') {
-                if (totalHours <= 8) {
-                    price = 200;
-                } else {
-                    price = 300;
+                else{
+                    riel.value = totalTime * 500;
+                }
+
+            }
+
+            else{
+
+                if (option.value === 'moto'){
+                    riel.value = totalTime * 300;
+                }
+                else{
+                    riel.value = totalTime * 1000;
                 }
             }
 
-            result.value = price;
+            dollar.value = riel.value / 4000;
+
         }
 
         calculatePrice();
+
+
     </script>
 
 </body>
