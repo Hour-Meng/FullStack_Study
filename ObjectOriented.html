@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JavaScript — 23 Core Concepts</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+*{font-family:'Inter',sans-serif}
+::selection{background:#ffedd5;color:#7c2d12}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#d6d3d1;border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#a8a29e}
+
+.slide-in{animation:slideIn .35s cubic-bezier(.16,1,.3,1) forwards}
+@keyframes slideIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+.code-wrap{background:#1c1917;border-radius:12px;overflow:hidden}
+.code-head{background:rgba(255,255,255,.06);padding:10px 16px;display:flex;align-items:center;gap:7px;border-bottom:1px solid rgba(255,255,255,.08)}
+.dot{width:10px;height:10px;border-radius:50%}
+.dot-r{background:#ef4444}.dot-y{background:#eab308}.dot-g{background:#22c55e}
+.code-wrap pre{padding:18px 22px;overflow-x:auto;font-size:13px;line-height:1.75;color:#e7e5e4;font-family:'Courier New',monospace;tab-size:2;margin:0}
+
+.kw{color:#c084fc}.str{color:#86efac}.num{color:#fbbf24}.cm{color:#78716c;font-style:italic}
+.fn{color:#67e8f9}.prop{color:#93c5fd}.this-k{color:#fb923c}.bool{color:#fbbf24}
+
+.prog{transition:width .35s cubic-bezier(.16,1,.3,1)}
+.nav-b{transition:all .15s ease}
+.nav-b:hover:not(:disabled){background:#1c1917;color:#fff}
+.nav-b:disabled{opacity:.3;cursor:not-allowed}
+
+.th-item{transition:all .15s ease;cursor:pointer}
+.th-item:hover{background:#f5f5f4}
+.th-item.active{background:#fff7ed;border-color:#c2410c}
+
+.tag{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:9999px;font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
+
+.cp-btn{transition:all .15s ease}
+.cp-btn:hover{background:rgba(255,255,255,.15)}
+
+.toast-msg{animation:tIn .25s ease,tOut .25s ease 1.4s forwards}
+@keyframes tIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tOut{from{opacity:1}to{opacity:0;transform:translateY(-8px)}}
+
+@media(max-width:1023px){.sidebar{display:none!important}}
+</style>
+</head>
+<body class="bg-stone-50 text-stone-800 overflow-hidden h-screen">
+
+<div id="toastBox" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 items-center"></div>
+
+<div class="fixed top-0 left-0 right-0 h-1 bg-stone-200/60 z-40">
+<div id="progBar" class="prog h-full bg-orange-700 rounded-r-full" style="width:4.35%"></div>
+</div>
+
+<nav class="fixed top-1 left-0 right-0 z-30 px-4 pt-4">
+<div class="max-w-7xl mx-auto">
+<div class="flex items-center justify-between bg-white/80 backdrop-blur-md border border-stone-200/60 rounded-full px-5 py-2.5 shadow-sm">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 bg-stone-900 rounded-lg flex items-center justify-center"><span class="text-white text-xs font-bold">JS</span></div>
+<span class="font-semibold text-sm hidden sm:block">23 Core Concepts</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="text-sm text-stone-500" style="font-variant-numeric:tabular-nums">
+<span id="curNum" class="text-stone-900 font-semibold">1</span><span class="mx-1">/</span>23
+</span>
+<button onclick="prev()" id="pBtn" class="nav-b w-8 h-8 rounded-full border border-stone-200/60 flex items-center justify-center text-stone-600" disabled><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+<button onclick="next()" id="nBtn" class="nav-b w-8 h-8 rounded-full border border-stone-200/60 flex items-center justify-center text-stone-600"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+<button onclick="toggleOv()" class="nav-b w-8 h-8 rounded-full border border-stone-200/60 flex items-center justify-center text-stone-600 lg:hidden"><i data-lucide="layout-grid" class="w-4 h-4"></i></button>
+</div>
+</div>
+</div>
+</nav>
+
+<div class="flex h-full pt-20">
+<aside class="sidebar w-60 flex-shrink-0 border-r border-stone-200/60 bg-white/40 backdrop-blur-sm overflow-y-auto pb-8 pt-4 px-3">
+<div class="mb-3 px-2"><span class="text-[10px] font-semibold uppercase tracking-wider text-stone-400">Slides</span></div>
+<div id="sideList"></div>
+</aside>
+<main class="flex-1 overflow-hidden flex flex-col">
+<div id="slideBox" class="flex-1 overflow-y-auto px-6 md:px-12 lg:px-20 py-10"></div>
+<div class="flex-shrink-0 border-t border-stone-200/60 bg-white/60 backdrop-blur-sm px-6 md:px-12 lg:px-20 py-4 flex items-center justify-between">
+<button onclick="prev()" id="pBtnB" class="nav-b flex items-center gap-2 px-4 py-2.5 rounded-full border border-stone-200/60 text-sm font-medium text-stone-600" disabled><i data-lucide="arrow-left" class="w-4 h-4"></i>Previous</button>
+<div id="dots" class="hidden md:flex items-center gap-1"></div>
+<button onclick="next()" id="nBtnB" class="nav-b flex items-center gap-2 px-4 py-2.5 rounded-full border border-stone-200/60 text-sm font-medium text-stone-600">Next<i data-lucide="arrow-right" class="w-4 h-4"></i></button>
+</div>
+</main>
+</div>
+
+<div id="ovModal" class="fixed inset-0 z-50 bg-stone-900/50 backdrop-blur-sm hidden items-center justify-center p-6" onclick="if(event.target===this)toggleOv()">
+<div class="bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[85vh] overflow-y-auto p-8">
+<div class="flex items-center justify-between mb-6">
+<h2 class="text-xl font-semibold">Overview</h2>
+<button onclick="toggleOv()" class="w-8 h-8 rounded-full border border-stone-200 flex items-center justify-center text-stone-500 hover:bg-stone-100 transition-colors"><i data-lucide="x" class="w-4 h-4"></i></button>
+</div>
+<div id="ovGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3"></div>
+</div>
+</div>
+
+<script>
+// ==================== SYNTAX HIGHLIGHTER ====================
+function hl(code) {
+    var h = code.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    var tok = [];
+    function st(m,c){tok.push('<span class="'+c+'">'+m+'</span>');return '\x00'+(tok.length-1)+'\x00'}
+
+    // Strings first (so // inside strings aren't caught as comments)
+    h = h.replace(/("(?:[^"\\]|\\.)*")/g, function(m){return st(m,'str')});
+    h = h.replace(/('(?:[^'\\]|\\.)*')/g, function(m){return st(m,'str')});
+    h = h.replace(/(`(?:[^`\\]|\\.)*`)/g, function(m){return st(m,'str')});
+
+    // Comments
+    h = h.replace(/(\/\/[^\n]*)/g, function(m){return st(m,'cm')});
+
+    // Keywords
+    h = h.replace(/\b(const|let|var|function|return|if|else|for|while|do|switch|case|break|continue|new|class|extends|super|typeof|instanceof|in|of|throw|try|catch|finally|import|export|default|from|static|get|set|delete|yield|async|await|void)\b/g, '<span class="kw">$1</span>');
+
+    // Booleans / special
+    h = h.replace(/\b(true|false|null|undefined|NaN|Infinity)\b/g, '<span class="bool">$1</span>');
+
+    // this
+    h = h.replace(/\b(this)\b/g, '<span class="this-k">$1</span>');
+
+    // Numbers
+    h = h.replace(/\b(\d+\.?\d*)\b/g, '<span class="num">$1</span>');
+
+    // Function calls
+    h = h.replace(/\b([a-zA-Z_$][\w$]*)\s*(?=\()/g, '<span class="fn">$1</span>');
+
+    // Dot properties
+    h = h.replace(/\.([#a-zA-Z_$][\w$]*)/g, '.<span class="prop">$1</span>');
+
+    // Restore tokens
+    h = h.replace(/\x00(\d+)\x00/g, function(_,i){return tok[parseInt(i)]});
+    return h;
+}
+
+// ==================== SLIDE DATA ====================
+var slides = [
+{
+    title:"Object",
+    tag:"Fundamental", tc:"bg-blue-50 text-blue-700",
+    link:"https://www.tutorialspoint.com/javascript/javascript_objects.htm",
+    exp:"An object in JavaScript is a collection of key-value pairs. Keys are strings (or Symbols), and values can be anything — primitives, functions, or other objects. Objects are the foundation of nearly everything in JavaScript.",
+    code:'// Creating an object using literal syntax\nconst person = {\n  name: "Alice",\n  age: 30,\n  isEmployed: true\n};\n\n// Accessing properties\ndot:  console.log(person.name);     // "Alice"\nbracket: console.log(person["age"]);   // 30\n\n// Adding a new property\nperson.city = "New York";\n\n// Deleting a property\ndelete person.isEmployed;\n\nconsole.log(person);\n// { name: "Alice", age: 30, city: "New York" }'
+},
+{
+    title:"Class",
+    tag:"ES6+", tc:"bg-purple-50 text-purple-700",
+    link:"https://www.tutorialspoint.com/javascript/javascript_classes.htm",
+    exp:"Classes are syntactic sugar over JavaScript's prototype-based inheritance. They provide a cleaner, more familiar way to create objects and handle inheritance, introduced in ES6. Under the hood, they still use prototypes.",
+    code:'class Animal {\n  constructor(name, sound) {\n    this.name = name;\n    this.sound = sound;\n  }\n\n  speak() {\n    console.log(this.name + " says " + this.sound);\n  }\n}\n\nconst dog = new Animal("Rex", "Woof!");\ndog.speak();  // "Rex says Woof!"\n\n// typeof class is "function"\nconsole.log(typeof Animal); // "function"'
+},
+{
+    title:"Object Properties",
+    tag:"Fundamental", tc:"bg-blue-50 text-blue-700",
+    link:"https://www.tutorialspoint.com/javascript/javascript_object_properties.htm",
+    exp:"Object properties are the key-value pairs that make up an object. Properties can be accessed via dot notation or bracket notation. Bracket notation is essential for dynamic keys and keys with special characters.",
+    code:'const user = {\n  firstName: "John",\n  lastName: "Doe",\n  "favorite-color": "blue"  // key with hyphen\n};\n\n// Dot notation\nconsole.log(user.firstName); // "John"\n\n// Bracket notation (required for special keys)\nconsole.log(user["favorite-color"]); // "blue"\n\n// Dynamic property access\nconst key = "lastName";\nconsole.log(user[key]); // "Doe"\n\n// Check if property exists\nconsole.log("age" in user);                  // false\nconsole.log(user.hasOwnProperty("firstName")); // true'
+},
+{
+    title:"Object Method",
+    tag:"Fundamental", tc:"bg-blue-50 text-blue-700",
+    link:"https://www.tutorialspoint.com/javascript/javascript_object_methods.htm",
+    exp:"An object method is a function stored as a property of an object. Methods can access and modify the object's data through the 'this' keyword, which refers to the object the method belongs to.",
+    code:'const calculator = {\n  value: 0,\n\n  add(n) {\n    this.value += n;\n    return this;  // enable chaining\n  },\n\n  subtract(n) {\n    this.value -= n;\n    return this;\n  },\n\n  getResult() {\n    return this.value;\n  }\n};\n\n// Method chaining\ncalculator.add(10).add(5).subtract(3);\nconsole.log(calculator.getResult()); // 12'
+},
+{
+    title:"Static Method",
+    tag:"ES6+", tc:"bg-purple-50 text-purple-700",
+    link:"https://www.tutorialspoint.com/javascript/javascript_static_methods.htm",
+    exp:"Static methods are defined on the class itself, not on instances. They are utility functions that don't depend on instance state. Call them directly on the class — instances cannot access them.",
+    code:'class MathUtils {\n  static clamp(value, min, max) {\n    return Math.min(Math.max(value, min), max);\n  }\n\n  static randomInt(min, max) {\n    return Math.floor(Math.random() * (max - min + 1)) + min;\n  }\n}\n\n// Called on the class, NOT on an instance\nconsole.log(MathUtils.clamp(15, 0, 10));  // 10\nconsole.log(MathUtils.randomInt(1, 6));   // e.g. 4\n\n// Instance cannot access static methods\nconst m = new MathUtils();\nm.clamp(5, 0, 10); // TypeError: m.clamp is not a function'
+},
+{
+    title:"Display Object",
+    tag:"Fundamental", tc:"bg-blue-50 text-blue-700",
+    link:"https://www.tutorialspoint.com/javascript/javascript_display_objects.htm",
+    exp:"Displaying objects requires specific methods because string coercion shows '[object Object]'. Different display methods serve different purposes — from debugging to JSON serialization.",
+    code:'const person = { name: "Alice", age: 30 };\n\n// String coercion — NOT useful for objects\nconsole.log("" + person); // "[object Object]"\n\n// Best: console.log (inspectable in devtools)\nconsole.log(person); // { name: "Alice", age: 30 }\n\n// JSON.stringify — serializable snapshot\nconsole.log(JSON.stringify(person));\n// \'{"name":"Alice","age":30}\'\n\n// Pretty-printed JSON\nconsole.log(JSON.stringify(person, null, 2));\n// {\n//   "name": "Alice",\n//   "age": 30\n// }\n\n// Object.entries — iterate key-value pairs\nObject.entries(person).forEach(function(pair) {\n  console.log(pair[0] + ": " + pair[1]);\n});'
+},
+{
+    title:"Object Accessor",
+    tag:"ES5+", tc:"bg-emerald-50 text-emerald-700",
+    link:"https://www.tutorialspoint.com/javascript/javascript_object_accessors.htm",
+    exp:"Getters and setters provide controlled access to object properties. They look like properties but act like methods, allowing you to validate, compute, or log access to data transparently.",
+    code:'class User {\n  constructor(firstName, lastName) {\n    this.firstName = firstName;\n    this.lastName = lastName;\n  }\n\n  // Getter — accessed like a property\n  get fullName() {\n    return this.firstName + " " + this.lastName;\n  }\n\n  // Setter — assigned like a property\n  set fullName(value) {\n    var parts = value.split(" ");\n    this.firstName = parts[0];\n    this.lastName = parts.slice(1).join(" ");\n  }\n}\n\nconst user = new User("John", "Doe");\nconsole.log(user.fullName); // "John Doe" (getter)\n\nuser.fullName = "Jane Smith";  // (setter)\nconsole.log(user.firstName);   // "Jane"'
+},
+{
+    title:"Object Constructor",
+    tag:"Pattern", tc:"bg-amber-50 text-amber-700",
+    link:"https://www.tutorialspoint.com/javascript/javascript_object_constructors.htm",
+    exp:"Constructor functions are the pre-ES6 way of creating objects from a template. When called with 'new', they create a new object, set 'this' to it, and return it. Classes are now preferred but constructors still underpin them.",
+    code:'function Car(brand, model, year) {\n  this.brand = brand;\n  this.model = model;\n  this.year = year;\n}\n\n// Add methods to prototype (shared, memory-efficient)\nCar.prototype.describe = function() {\n  return this.year + " " + this.brand + " " + this.model;\n};\n\nCar.prototype.age = function() {\n  return new Date().getFullYear() - this.year;\n};\n\nconst myCar = new Car("Toyota", "Corolla", 2020);\nconsole.log(myCar.describe()); // "2020 Toyota Corolla"\nconsole.log(myCar.age());       // 5 (depends on current year)'
+},
+{
+    title:"Native Prototype",
+    tag:"Advanced", tc:"bg-red-50 text-red-700",
+    link:"https://www.tutorialspoint.com/javascript/javascript_native_prototypes.htm",
+    exp:"Every built-in JavaScript type (Array, String, Number, etc.) has a prototype object containing methods. You can extend these native prototypes with custom methods, though it is generally discouraged in production.",
+    code:'// Built-in methods live on prototypes\nconsole.log([].hasOwnProperty("map"));       // false\nconsole.log(Array.prototype.hasOwnProperty("map")); // true\n\n// Extending native prototypes (use with caution!)\nArray.prototype.last = function() {\n  return this[this.length - 1];\n};\n\nString.prototype.capitalize = function() {\n  return this.charAt(0).toUpperCase() + this.slice(1);\n};\n\n// Now available on ALL instances\nconsole.log([1, 2, 3].last());      // 3\nconsole.log("hello".capitalize());   // "Hello"'
+},
+{
+    title:"ES5 Object Methods",
+    tag:"ES5+", tc:"bg-emerald-50 text-emerald-700",
+    link:"https://www.tutorialspoint.com/javascript/javascript_es5_object_methods.htm",
+    exp:"ES5 introduced static methods on Object for working with objects: keys, values, entries, assign, freeze, seal, and more. These are essential for immutable patterns and data transformation.",
+    code:'const target = { a: 1 };\nconst source = { b: 2, c: 3 };\n\n// Object.assign — merge objects (shallow copy)\nconst merged = Object.assign({}, target, source);\nconsole.log(merged); // { a: 1, b: 2, c: 3 }\n\n// Object.keys / values / entries\nconst obj = { x: 10, y: 20 };\nconsole.log(Object.keys(obj));    // ["x", "y"]\nconsole.log(Object.values(obj));  // [10, 20]\nconsole.log(Object.entries(obj)); // [["x",10], ["y",20]]\n\n// Object.freeze — makes object immutable\nconst frozen = Object.freeze({ a: 1 });\nfrozen.a = 99; // silently fails (strict mode throws)\nconsole.log(frozen.a); // 1\n\n// Object.is — strict equality with edge cases\nconsole.log(Object.is(NaN, NaN)); // true (vs === false)'
+},
+{
+    title:"Encapsulation",
+    tag:"OOP", tc:"bg-orange-50 text-orange-700",
+    link:"https://www.tutorialspoint.com/javascript/javascript_encapsulation.htm",
+    exp:"Encapsulation bundles data and methods, hiding internal state from outside access. In modern JavaScript, private fields (prefixed with #) enforce true encapsulation at the language level — they are inaccessible from outside the class.",
+    code:'class BankAccount {\n  #balance;  // Private field (ES2022)\n\n  constructor(initialBalance) {\n    this.#balance = initialBalance;\n  }\n\n  deposit(amount) {\n    if (amount <= 0) throw new Error("Invalid amount");\n    this.#balance += amount;\n  }\n\n  withdraw(amount) {\n    if (amount > this.#balance) throw new Error("Insufficient funds");\n    this.#balance -= amount;\n  }\n\n  get balance() { return this.#balance; }\n}\n\nconst acct = new BankAccount(100);\nacct.deposit(50);\nacct.withdraw(30);\nconsole.log(acct.balance); // 120\n// acct.#balance; // SyntaxError — truly private'
+},
+{
+    title:"Inheritance",
+    tag:"OOP", tc:"bg-orange-50 text-orange-700",
+    link:"https://www.tutorialspoint.com/javascript/javascript_inheritance.htm",
+    exp:"Inheritance allows a class to acquire properties and methods from another class using 'extends'. The child class can override methods via super calls, creating an 'is-a' relationship between types.",
+    code:'class Shape {\n  constructor(color) {\n    this.color = color;\n  }\n  describe() {\n    return "A " + this.color + " shape";\n  }\n}\n\nclass Circle extends Shape {\n  constructor(color, radius) {\n    super(color); // Must call super() first\n    this.radius = radius;\n  }\n\n  area() {\n    return Math.PI * this.radius ** 2;\n  }\n\n  // Override parent method\n  describe() {\n    return super.describe() + " (r=" + this.radius + ")";\n  }\n}\n\nconst c = new Circle("red", 5);\nconsole.log(c.describe()); // "A red shape (r=5)"\nconsole.log(c.area());       // 78.5398...'
+},
+{
+    title:"Abstraction",
+    tag:"OOP", tc:"bg-orange-50 text-orange-700",
+    link:"https://www.tutorialspoint.com/javascript/javascript_abstraction.htm",
+    exp:"Abstraction hides complex implementation details and exposes only essential features. JavaScript has no native abstract classes, but you can simulate them by throwing errors in base methods that must be overridden by child classes.",
+    code:'// Simulating an abstract class\nclass Database {\n  constructor(url) {\n    if (new.target === Database) {\n      throw new Error("Cannot instantiate abstract class");\n    }\n    this.url = url;\n  }\n\n  // Abstract method — must be overridden\n  connect() {\n    throw new Error("Method \'connect\' must be implemented");\n  }\n\n  query(sql) {\n    throw new Error("Method \'query\' must be implemented");\n  }\n}\n\nclass PostgresDB extends Database {\n  connect() { console.log("Connected to " + this.url); }\n  query(sql) { console.log("Executing: " + sql); }\n}\n\nconst db = new PostgresDB("localhost:5432");\ndb.connect(); // "Connected to localhost:5432"'
+},
+{
+    title:"Polymorphism",
+    tag:"OOP", tc:"bg-orange-50 text-orange-700",
+    link:"https://www.tutorialspoint.com/javascript/javascript_polymorphism.htm",
+    exp:"Polymorphism means 'many forms' — different objects respond to the same method call in their own way. In JavaScript, this is achieved through method overriding in inheritance or duck typing with shared interfaces.",
+    code:'class PaymentProcessor {\n  process(amount) { throw new Error("Not implemented"); }\n}\n\nclass StripeProcessor extends PaymentProcessor {\n  process(amount) {\n    console.log("Stripe: Charging $" + amount);\n  }\n}\n\nclass PaypalProcessor extends PaymentProcessor {\n  process(amount) {\n    console.log("PayPal: Sending $" + amount);\n  }\n}\n\n// Same interface, different behavior\nconst processors = [\n  new StripeProcessor(),\n  new PaypalProcessor()\n];\n\nprocessors.forEach(function(p) {\n  p.process(99.99);\n});\n// Stripe: Charging $99.99\n// PayPal: Sending $99.99'
+},
+{
+    title:"Destructuring",
+    tag:"ES6+", tc:"bg-purple-50 text-purple-700",
+    link:"https://www.tutorialspoint.com/javascript/javascript_destructuring.htm",
+    exp:"Destructuring is a syntax that lets you unpack values from arrays or properties from objects into distinct variables. It makes code cleaner by avoiding repetitive property access and temporary variables.",
+    code:'const user = { name: "Alice", email: "a@b.com", age: 25 };\n\n// Before destructuring\nconst name = user.name;\nconst email = user.email;\n\n// After destructuring — much cleaner\nconst { name: n, email: e } = user;\nconsole.log(n, e); // "Alice" "a@b.com"\n\n// Works with arrays too\nconst colors = ["red", "green", "blue"];\nconst [first, second] = colors;\nconsole.log(first, second); // "red" "green"\n\n// Function parameters\nfunction greet({ name, age }) {\n  console.log(name + " is " + age + " years old");\n}\ngreet(user); // "Alice is 25 years old"'
+},
+{
+    title:"Object Destructuring",
+    tag:"ES6+", tc:"bg-purple-50 text-purple-700",
+    link:"https://www.tutorialspoint.com/javascript/javascript_object_destructuring.htm",
+    exp:"Object destructuring extracts specific properties into variables. You can rename variables with colons, set defaults for missing properties, and collect remaining properties with the rest pattern — all in one expression.",
+    code:'const config = {\n  host: "localhost",\n  port: 3000,\n  debug: false\n};\n\n// Basic destructuring\nconst { host, port } = config;\n\n// Rename variables with colon\nconst { host: serverHost, port: serverPort } = config;\nconsole.log(serverHost); // "localhost"\n\n// Default values\nconst { host: h, timeout = 5000 } = config;\nconsole.log(timeout); // 5000 (not in config, uses default)\n\n// Combined: rename + default\nconst { debug: isDebug = true } = config;\nconsole.log(isDebug); // false (value exists in config)\n\n// Rest pattern — collect remaining props\nconst { host: ho, ...rest } = config;\nconsole.log(rest); // { port: 3000, debug: false }'
+},
+{
+    title:"Destructuring Assignment",
+    tag:"ES6+", tc:"bg-purple-50 text-purple-700",
+    link:"https://www.tutorialspoint.com/javascript/javascript_destructuring_assignment.htm",
+    exp:"Destructuring assignment allows assigning values from arrays or objects to existing variables. It can be used in any assignment context — not just declarations — making it versatile for swapping and updating values.",
+    code:'// Destructuring in declaration\nlet { a, b } = { a: 1, b: 2 };\n\n// Destructuring assignment to EXISTING variables (parentheses needed)\nlet x = 10, y = 20;\n({ x, y } = { x: 100, y: 200 });\nconsole.log(x, y); // 100 200\n\n// Swap variables without a temp variable\nlet p = "hello", q = "world";\n[p, q] = [q, p];\nconsole.log(p, q); // "world" "hello"\n\n// In for...of loops\nconst pairs = [["a", 1], ["b", 2]];\nfor (const [key, val] of pairs) {\n  console.log(key + " = " + val);\n}\n// "a = 1"\n// "b = 2"'
+},
+{
+    title:"Array Destructuring",
+    tag:"ES6+", tc:"bg-purple-50 text-purple-700",
+    link:"https://www.tutorialspoint.com/javascript/javascript_array_destructuring.htm",
+    exp:"Array destructuring extracts elements by position (not by name). You can skip elements with commas, use rest syntax to collect remaining items, and set defaults for undefined positions.",
+    code:'const scores = [95, 87, 72, 68, 91];\n\n// Positional extraction\nconst [first, second, third] = scores;\nconsole.log(first, third); // 95 72\n\n// Skip elements with extra commas\nconst [, , bronze] = scores;\nconsole.log(bronze); // 72\n\n// Rest element — gather remaining items\nconst [gold, silver, ...others] = scores;\nconsole.log(gold, silver, others); // 95 87 [72, 68, 91]\n\n// Default values\nconst [a2, b2, c2, d2, e2, f2 = 0] = scores;\nconsole.log(f2); // 0 (no 6th element)\n\n// Practical: function returning multiple values\nfunction parseName(str) {\n  const parts = str.split(" ");\n  return [parts[0], parts.slice(1).join(" ")];\n}'
+},
+{
+    title:"Nested Destructuring",
+    tag:"ES6+", tc:"bg-purple-50 text-purple-700",
+    link:"https://www.tutorialspoint.com/javascript/javascript_nested_destructuring.htm",
+    exp:"Nested destructuring extracts deeply buried values from complex data structures in a single statement. It mirrors the shape of the nested object or array, making deep data extraction highly readable.",
+    code:'const response = {\n  status: 200,\n  data: {\n    user: {\n      id: 1,\n      profile: {\n        name: "Alice",\n        address: { city: "NYC", zip: "10001" }\n      }\n    }\n  }\n};\n\n// Flatten a deeply nested structure\nconst {\n  status,\n  data: {\n    user: {\n      profile: { name, address: { city, zip } }\n    }\n  }\n} = response;\n\nconsole.log(name, city, zip); // "Alice" "NYC" "10001"\n\n// Nested array + object destructuring\nconst users = [\n  { name: "Bob", scores: [90, 85] }\n];\nconst [{ name: n1, scores: [s1] }] = users;\nconsole.log(n1, s1); // "Bob" 90'
+},
+{
+    title:"Optional Chaining",
+    tag:"ES2020", tc:"bg-cyan-50 text-cyan-700",
+    link:"https://www.tutorialspoint.com/javascript/javascript_optional_chaining.htm",
+    exp:"The optional chaining operator (?.) safely accesses deeply nested properties. If any part of the chain is null or undefined, it short-circuits and returns undefined instead of throwing a TypeError.",
+    code:'const user = {\n  name: "Alice",\n  address: {\n    street: "123 Main St"\n    // No "city" property\n  }\n};\n\n// Without optional chaining — verbose\nconst city = user && user.address && user.address.city;\n\n// With optional chaining — clean and safe\nconst city2 = user?.address?.city;\nconsole.log(city2); // undefined (no error!)\n\n// Optional method call\nconst result = user.getName?.(); // undefined if not a function\n\n// Optional dynamic property\nconst key = "name";\nconsole.log(user?.[key]); // "Alice"\n\n// With nullish coalescing for defaults\nconst cityName = user?.address?.city ?? "Unknown";\nconsole.log(cityName); // "Unknown"'
+},
+{
+    title:"Global Object",
+    tag:"Runtime", tc:"bg-indigo-50 text-indigo-700",
+    link:"https://www.tutorialspoint.com/javascript/javascript_global_object.htm",
+    exp:"The global object provides variables and functions available everywhere. In browsers it's 'window', in Node.js it's 'global', and 'globalThis' provides a universal way to access it regardless of environment.",
+    code:'// Environment-specific global objects\nconsole.log(typeof window);  // "object" in browser, "undefined" in Node\nconsole.log(typeof global);  // "object" in Node, "undefined" in browser\n\n// Universal access (ES2020)\nconsole.log(globalThis); // Works in ALL environments\n\n// Global properties\nconsole.log(globalThis.NaN);       // NaN\nconsole.log(globalThis.Infinity);  // Infinity\nconsole.log(globalThis.undefined); // undefined\n\n// Global functions (available without prefix)\nsetTimeout(function() { console.log("1s later"); }, 1000);\nparseInt("42"); // 42\n\n// Defining a truly global variable\nglobalThis.myGlobal = "everywhere";\nconsole.log(myGlobal); // "everywhere"'
+},
+{
+    title:"Mixins",
+    tag:"Pattern", tc:"bg-amber-50 text-amber-700",
+    link:"https://www.tutorialspoint.com/javascript/javascript_mixins.htm",
+    exp:"Mixins are a pattern for sharing functionality between unrelated classes without inheritance. They work by copying methods from one object into another using Object.assign, enabling multiple 'inheritance' of behavior.",
+    code:'// Mixin objects with reusable behavior\nvar Serializable = {\n  toJSON: function() { return JSON.stringify(this); }\n};\n\nvar Loggable = {\n  log: function() {\n    console.log("[" + this.constructor.name + "]", this);\n  }\n};\n\n// A simple class\nclass User {\n  constructor(name, email) {\n    this.name = name;\n    this.email = email;\n  }\n}\n\n// Apply mixins via Object.assign on the prototype\nObject.assign(User.prototype, Serializable, Loggable);\n\nconst u = new User("Alice", "a@b.com");\nu.log();             // [User] { name: "Alice", email: "a@b.com" }\nconsole.log(u.toJSON()); // \'{"name":"Alice","email":"a@b.com"}\''
+},
+{
+    title:"Proxies",
+    tag:"Meta", tc:"bg-rose-50 text-rose-700",
+    link:"https://www.tutorialspoint.com/javascript/javascript_Proxies.htm",
+    exp:"Proxy objects wrap another object and intercept fundamental operations like property access, assignment, and enumeration. They enable powerful metaprogramming — validation, logging, and reactive data (Vue 3 uses Proxies for reactivity).",
+    code:'// Create a proxy with custom traps\nvar handler = {\n  // Trap: property read\n  get: function(target, prop) {\n    console.log("Accessing: " + String(prop));\n    return Reflect.get(target, prop);\n  },\n\n  // Trap: property write\n  set: function(target, prop, value) {\n    if (typeof value === "number" && value < 0) {\n      throw new Error("No negative values allowed");\n    }\n    return Reflect.set(target, prop, value);\n  }\n};\n\nvar data = { score: 0, level: 1 };\nvar proxy = new Proxy(data, handler);\n\nproxy.score = 100;  // Accessing: score  (then sets to 100)\nproxy.score = -5;    // Error: No negative values allowed'
+}
+];
+
+// ==================== STATE ====================
+var cur = 0;
+var busy = false;
+
+// ==================== RENDER ====================
+function renderSide() {
+    var el = document.getElementById('sideList');
+    var out = '';
+    for (var i = 0; i < slides.length; i++) {
+        var s = slides[i];
+        var active = i === cur;
+        out += '<button onclick="go(' + i + ')" class="th-item text-left w-full px-3 py-2 rounded-lg border text-sm ' +
+            (active ? 'active border-orange-300' : 'border-transparent text-stone-500') + '">' +
+            '<span class="text-xs ' + (active ? 'text-orange-700 font-semibold' : 'text-stone-400') + '" style="font-variant-numeric:tabular-nums">' +
+            String(i+1).padStart(2,'0') + '</span>' +
+            '<span class="ml-1.5 font-medium">' + s.title + '</span></button>';
+    }
+    el.innerHTML = out;
+}
+
+function renderSlide() {
+    var s = slides[cur];
+    var codeHtml = hl(s.code);
+    var el = document.getElementById('slideBox');
+    el.innerHTML =
+        '<div class="max-w-4xl mx-auto slide-in">' +
+            '<div class="mb-8" style="animation:slideIn .35s .05s cubic-bezier(.16,1,.3,1) both">' +
+                '<div class="flex items-center gap-3 mb-4 flex-wrap">' +
+                    '<span class="tag ' + s.tc + '">' + s.tag + '</span>' +
+                    '<a href="' + s.link + '" target="_blank" rel="noopener" class="tag bg-stone-100 text-stone-500 hover:bg-stone-200 transition-colors cursor-pointer">' +
+                        '<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>' +
+                        ' Reference' +
+                    '</a>' +
+                '</div>' +
+                '<h1 class="text-3xl md:text-4xl font-semibold text-stone-900 tracking-tight">' + s.title + '</h1>' +
+            '</div>' +
+            '<div class="mb-8" style="animation:slideIn .35s .1s cubic-bezier(.16,1,.3,1) both">' +
+                '<p class="text-base md:text-lg text-stone-600 leading-relaxed">' + s.exp + '</p>' +
+            '</div>' +
+            '<div style="animation:slideIn .35s .15s cubic-bezier(.16,1,.3,1) both">' +
+                '<div class="code-wrap shadow-lg">' +
+                    '<div class="code-head">' +
+                        '<span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>' +
+                        '<span class="ml-3 text-xs text-stone-500 font-medium">JavaScript</span>' +
+                        '<button onclick="copyCode()" class="cp-btn ml-auto flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs text-stone-400 hover:text-stone-200">' +
+                            '<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>' +
+                            ' Copy' +
+                        '</button>' +
+                    '</div>' +
+                    '<pre>' + codeHtml + '</pre>' +
+                '</div>' +
+            '</div>' +
+            '<div class="mt-10 flex items-center justify-center gap-2" style="animation:slideIn .35s .2s cubic-bezier(.16,1,.3,1) both">' +
+                buildDots() +
+            '</div>' +
+        '</div>';
+    el.scrollTop = 0;
+}
+
+function buildDots() {
+    var out = '';
+    for (var i = 0; i < slides.length; i++) {
+        var cls = 'w-1.5 h-1.5 rounded-full transition-all duration-300 ';
+        if (i === cur) cls += 'bg-orange-700 w-6';
+        else if (i < cur) cls += 'bg-stone-400';
+        else cls += 'bg-stone-300';
+        out += '<button onclick="go(' + i + ')" class="' + cls + '" title="' + slides[i].title + '"></button>';
+    }
+    return out;
+}
+
+function renderDots() {
+    document.getElementById('dots').innerHTML = buildDots();
+}
+
+function updateUI() {
+    document.getElementById('curNum').textContent = cur + 1;
+    document.getElementById('progBar').style.width = ((cur + 1) / slides.length * 100) + '%';
+
+    var d = cur === 0;
+    var d2 = cur === slides.length - 1;
+    document.getElementById('pBtn').disabled = d;
+    document.getElementById('pBtnB').disabled = d;
+    document.getElementById('nBtn').disabled = d2;
+    document.getElementById('nBtnB').disabled = d2;
+
+    renderSide();
+    renderDots();
+    renderSlide();
+}
+
+// ==================== NAVIGATION ====================
+function next() {
+    if (cur >= slides.length - 1 || busy) return;
+    busy = true; cur++; updateUI();
+    setTimeout(function(){ busy = false; }, 350);
+}
+function prev() {
+    if (cur <= 0 || busy) return;
+    busy = true; cur--; updateUI();
+    setTimeout(function(){ busy = false; }, 350);
+}
+function go(i) {
+    if (i === cur || busy) return;
+    busy = true; cur = i; updateUI();
+    setTimeout(function(){ busy = false; }, 350);
+}
+
+// ==================== UTILS ====================
+function copyCode() {
+    var text = slides[cur].code;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function() { toast('Copied to clipboard'); });
+    } else {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        toast('Copied to clipboard');
+    }
+}
+
+function toast(msg) {
+    var box = document.getElementById('toastBox');
+    var el = document.createElement('div');
+    el.className = 'toast-msg bg-stone-900 text-white text-sm font-medium px-4 py-2.5 rounded-full shadow-lg flex items-center gap-2';
+    el.innerHTML = '<svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>' + msg;
+    box.appendChild(el);
+    setTimeout(function(){ if (el.parentNode) el.remove(); }, 2000);
+}
+
+function toggleOv() {
+    var m = document.getElementById('ovModal');
+    if (m.classList.contains('hidden')) {
+        var g = document.getElementById('ovGrid');
+        var out = '';
+        for (var i = 0; i < slides.length; i++) {
+            var s = slides[i];
+            var active = i === cur;
+            out += '<button onclick="go(' + i + ');toggleOv();" class="text-left p-4 rounded-xl border transition-all duration-200 ' +
+                (active ? 'border-orange-300 bg-orange-50' : 'border-stone-200 bg-white hover:border-stone-300 hover:shadow-md') + '">' +
+                '<span class="text-[10px] font-semibold uppercase tracking-wider text-stone-400">' + String(i+1).padStart(2,'0') + '</span>' +
+                '<h3 class="font-semibold text-sm mt-1 text-stone-900">' + s.title + '</h3>' +
+                '<span class="tag ' + s.tc + ' mt-2 text-[10px]">' + s.tag + '</span></button>';
+        }
+        g.innerHTML = out;
+        m.classList.remove('hidden');
+        m.classList.add('flex');
+    } else {
+        m.classList.add('hidden');
+        m.classList.remove('flex');
+    }
+}
+
+// ==================== KEYBOARD ====================
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); next(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prev(); }
+    else if (e.key === 'Home') { e.preventDefault(); go(0); }
+    else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+    else if (e.key === 'Escape') {
+        var m = document.getElementById('ovModal');
+        if (!m.classList.contains('hidden')) toggleOv();
+    }
+});
+
+// ==================== TOUCH ====================
+var tx = 0;
+document.addEventListener('touchstart', function(e){ tx = e.changedTouches[0].screenX; }, {passive:true});
+document.addEventListener('touchend', function(e){
+    var diff = tx - e.changedTouches[0].screenX;
+    if (Math.abs(diff) > 60) { if (diff > 0) next(); else prev(); }
+}, {passive:true});
+
+// ==================== INIT ====================
+document.addEventListener('DOMContentLoaded', function() {
+    updateUI();
+    try { lucide.createIcons(); } catch(e) {}
+});
+</script>
+</body>
+</html>
