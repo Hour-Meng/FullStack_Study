@@ -1,0 +1,23 @@
+/* You can add global styles to this file, and also import other style files */
+
+/* This is import a custom font */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --bg-cream: #fbf8f2;
+    --coffee-dark: #2d1d16;
+    --coffee-brown: #4a3728;
+    --coffee-muted: #7d6e65;
+    --accent-green-bg: #eaf4eb;
+    --accent-green-text: #4e8253;
+    --accent-pink-bg: #fae8e8;
+    --accent-pink-text: #b85d5d;
+    --accent-orange-bg: #faeee4;
+    --accent-orange-text: #b26839;
+    --card-bg: #ffffff;
+}
+
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}

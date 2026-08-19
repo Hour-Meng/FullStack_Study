@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Static vs Dynamic Array Visualizer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+        h1, h2 { text-align: center; }
+        .demo-box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        button {
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-add { background-color: #28a745; }
+        .btn-add:hover { background-color: #218838; }
+        .btn-reset { background-color: #dc3545; }
+        .btn-reset:hover { background-color: #c82333; }
+
+        .array-container {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 15px;
+            min-height: 50px;
+        }
+        .cell {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #007bff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        .cell.filled {
+            background-color: #007bff;
+            color: white;
+        }
+        .cell.overflow {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .status {
+            text-align: center;
+            font-family: monospace;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Static vs. Dynamic Array Visualizer</h1>
+
+    <div class="demo-box">
+        <h2>Static Array (Fixed Capacity = 4)</h2>
+        <div class="controls">
+            <button class="btn-add" onclick="addStatic()">Push Element</button>
+            <button class="btn-reset" onclick="resetStatic()">Reset</button>
+        </div>
+        <div class="array-container" id="static-grid"></div>
+        <div class="status" id="static-status">Capacity: 4 | Elements: 0</div>
+    </div>
+
+    <div class="demo-box">
+        <h2>Dynamic Array (Initial Capacity = 2)</h2>
+        <div class="controls">
+            <button class="btn-add" onclick="addDynamic()">Push Element</button>
+            <button class="btn-reset" onclick="resetDynamic()">Reset</button>
+        </div>
+        <div class="array-container" id="dynamic-grid"></div>
+        <div class="status" id="dynamic-status">Capacity: 2 | Elements: 0</div>
+    </div>
+
+    <script>
+        // Static State
+        const staticCap = 4;
+        let staticCount = 0;
+
+        // Dynamic State
+        let dynamicCap = 2;
+        let dynamicCount = 0;
+
+        function renderStatic() {
+            const grid = document.getElementById('static-grid');
+            grid.innerHTML = '';
+            for (let i = 0; i < staticCap; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell' + (i < staticCount ? ' filled' : '');
+                cell.textContent = i < staticCount ? (i + 1) * 10 : '';
+                grid.appendChild(cell);
+            }
+            document.getElementById('static-status').textContent = 
+                `Capacity: ${staticCap} | Elements: ${staticCount}`;
+        }
+
+        function addStatic() {
+            if (staticCount < staticCap) {
+                staticCount++;
+                renderStatic();
+            } else {
+                document.getElementById('static-status').textContent = 
+                    "⚠️ OVERFLOW ERROR: Cannot insert into full Static Array!";
+            }
+        }
+
+        function resetStatic() {
+            staticCount = 0;
+            renderStatic();
+        }
+
+        function renderDynamic() {
+            const grid = document.getElementById('dynamic-grid');
+            grid.innerHTML = '';
+            for (let i = 0; i < dynamicCap; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell' + (i < dynamicCount ? ' filled' : '');
+                cell.textContent = i < dynamicCount ? (i + 1) * 10 : '';
+                grid.appendChild(cell);
+            }
+            document.getElementById('dynamic-status').textContent = 
+                `Capacity: ${dynamicCap} | Elements: ${dynamicCount}`;
+        }
+
+        function addDynamic() {
+            if (dynamicCount >= dynamicCap) {
+                // Double capacity on overflow
+                dynamicCap *= 2;
+            }
+            dynamicCount++;
+            renderDynamic();
+        }
+
+        function resetDynamic() {
+            dynamicCap = 2;
+            dynamicCount = 0;
+            renderDynamic();
+        }
+
+        // Initial render
+        renderStatic();
+        renderDynamic();
+    </script>
+
+</body>
+</html>

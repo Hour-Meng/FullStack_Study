@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitwise XOR & Dynamic Array Visualizer</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #1c1e21;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        h2 { margin-top: 0; color: #1a73e8; }
+
+        .inputs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        input {
+            padding: 8px 12px;
+            font-size: 16px;
+            border: 2px solid #ccc;
+            border-radius: 6px;
+            width: 100px;
+        }
+
+        .bit-grid {
+            display: grid;
+            grid-template-columns: 140px repeat(8, 40px);
+            gap: 6px;
+            align-items: center;
+            font-family: monospace;
+            font-size: 18px;
+            margin: 15px 0;
+        }
+
+        .bit-label {
+            font-weight: bold;
+            font-size: 14px;
+            font-family: sans-serif;
+        }
+
+        .bit-cell {
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            background-color: #e4e6eb;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .bit-cell.on {
+            background-color: #34a853;
+            color: white;
+        }
+
+        .bit-cell.result-on {
+            background-color: #1a73e8;
+            color: white;
+        }
+
+        .bit-cell.diff {
+            border: 2px solid #ea4335;
+        }
+
+        .calculation-step {
+            background: #f8f9fa;
+            padding: 15px;
+            border-left: 4px solid #1a73e8;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 16px;
+            margin-top: 15px;
+        }
+
+        .array-box {
+            display: inline-block;
+            padding: 8px 16px;
+            margin: 5px;
+            border: 2px solid #1a73e8;
+            border-radius: 6px;
+            background: #e8f0fe;
+            font-weight: bold;
+        }
+
+        .array-box.selected {
+            background: #34a853;
+            color: white;
+            border-color: #2d9247;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>Bitwise XOR (`^`) Live Calculator</h2>
+        <p>Change the numbers below to see the binary bits XORed together:</p>
+
+        <div class="inputs">
+            <div class="input-group">
+                <label><b>x</b> value:</label>
+                <input type="number" id="val-x" value="5" min="0" max="255" oninput="updateVisualizer()">
+            </div>
+            <div class="input-group">
+                <label><b>lastAnswer</b>:</label>
+                <input type="number" id="val-last" value="3" min="0" max="255" oninput="updateVisualizer()">
+            </div>
+            <div class="input-group">
+                <label><b>n</b> (Array Count):</label>
+                <input type="number" id="val-n" value="2" min="1" max="10" oninput="updateVisualizer()">
+            </div>
+        </div>
+
+        <div class="bit-grid" id="bit-grid"></div>
+
+        <div class="calculation-step" id="calc-step"></div>
+    </div>
+
+    <div class="card">
+        <h2>Selected Array (`arr[idx]`)</h2>
+        <div id="arrays-container"></div>
+    </div>
+
+    <script>
+        function toBinaryArray(num) {
+            const str = num.toString(2).padStart(8, '0');
+            return str.split('').map(Number);
+        }
+
+        function updateVisualizer() {
+            const x = parseInt(document.getElementById('val-x').value) || 0;
+            const last = parseInt(document.getElementById('val-last').value) || 0;
+            const n = parseInt(document.getElementById('val-n').value) || 1;
+
+            const xBits = toBinaryArray(x);
+            const lastBits = toBinaryArray(last);
+            const xorVal = x ^ last;
+            const resBits = toBinaryArray(xorVal);
+            const idx = xorVal % n;
+
+            const grid = document.getElementById('bit-grid');
+            grid.innerHTML = '';
+
+            // Render x row
+            grid.innerHTML += `<div class="bit-label">x (${x})</div>`;
+            xBits.forEach((b, i) => {
+                grid.innerHTML += `<div class="bit-cell ${b ? 'on' : ''}">${b}</div>`;
+            });
+
+            // Render lastAnswer row
+            grid.innerHTML += `<div class="bit-label">lastAnswer (${last})</div>`;
+            lastBits.forEach((b, i) => {
+                const diff = xBits[i] !== b ? 'diff' : '';
+                grid.innerHTML += `<div class="bit-cell ${b ? 'on' : ''} ${diff}">${b}</div>`;
+            });
+
+            // Divider line
+            grid.innerHTML += `<div style="grid-column: span 9; border-top: 2px solid #ccc; margin: 5px 0;"></div>`;
+
+            // Render XOR Result row
+            grid.innerHTML += `<div class="bit-label">x ^ lastAnswer (${xorVal})</div>`;
+            resBits.forEach((b, i) => {
+                grid.innerHTML += `<div class="bit-cell ${b ? 'result-on' : ''}">${b}</div>`;
+            });
+
+            // Math output
+            document.getElementById('calc-step').innerHTML = 
+                `1. XOR Calculation : ${x} ^ ${last} = <b>${xorVal}</b><br>` +
+                `2. Target Index    : (${xorVal} % ${n}) = <b>${idx}</b>`;
+
+            // Render dynamic arrays target
+            const arrContainer = document.getElementById('arrays-container');
+            arrContainer.innerHTML = '';
+            for (let i = 0; i < n; i++) {
+                const isSelected = i === idx ? 'selected' : '';
+                arrContainer.innerHTML += `<div class="array-box ${isSelected}">arr[${i}] ${i === idx ? '◄ TARGET' : ''}</div>`;
+            }
+        }
+
+        updateVisualizer();
+    </script>
+</body>
+</html>

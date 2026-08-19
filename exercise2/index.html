@@ -82,7 +82,8 @@
 
             
             if ( totalTime < 8){
-                if (option.value === 'moto'){
+                // I don't have to use option.value, simple option
+                if (option === 'moto'){
                     riel.value = totalTime * 200;
                 }
                 else{
@@ -93,7 +94,7 @@
 
             else{
 
-                if (option.value === 'moto'){
+                if (option === 'moto'){
                     riel.value = totalTime * 300;
                 }
                 else{

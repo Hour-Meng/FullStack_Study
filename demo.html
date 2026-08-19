@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hourglass Traversal Visualizer</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1a73e8;
+        }
+
+        .description {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-wrong {
+            background-color: #ea4335;
+            color: white;
+        }
+
+        .btn-wrong:hover {
+            background-color: #d93025;
+        }
+
+        .btn-correct {
+            background-color: #34a853;
+            color: white;
+        }
+
+        .btn-correct:hover {
+            background-color: #2d9247;
+        }
+
+        .btn-reset {
+            background-color: #5f6368;
+            color: white;
+        }
+
+        .main-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .grid-container {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(6, 45px);
+            grid-template-rows: repeat(6, 45px);
+            gap: 4px;
+            margin-top: 10px;
+        }
+
+        .cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #e8eaed;
+            font-weight: bold;
+            font-size: 16px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        /* Highlighting Styles */
+        .cell.active-top-left {
+            border: 2px solid #1a73e8;
+        }
+
+        .cell.hourglass-top {
+            background-color: #4285f4;
+            color: white;
+        }
+
+        .cell.hourglass-mid {
+            background-color: #fbbc04;
+            color: black;
+        }
+
+        .cell.hourglass-bot {
+            background-color: #34a853;
+            color: white;
+        }
+
+        .cell.visited-start {
+            background-color: #fce8e6;
+            color: #c5221f;
+        }
+
+        .info-panel {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .status-box {
+            background-color: #f1f3f4;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+
+        .legend {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+            font-size: 12px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Hourglass Traversal Demo</h1>
+
+    <div class="description">
+        <p><strong>Compare your loop logic with the full 2D grid traversal:</strong></p>
+        <ul>
+            <li><strong>Your Loop (<code>x += 1, y += 1</code> simultaneously):</strong> Only moves along the main diagonal, checking 4 starting positions before stopping early at <code>y &lt; 4</code>.</li>
+            <li><strong>Correct Nested Loop (<code>row 0..3, col 0..3</code>):</strong> Systematically scans all 16 possible top-left starting points across the $6 \times 6$ matrix.</li>
+        </ul>
+    </div>
+
+    <div class="controls">
+        <button class="btn-wrong" onclick="runYourLogic()">Play Your Logic</button>
+        <button class="btn-correct" onclick="runCorrectLogic()">Play Correct Logic</button>
+        <button class="btn-reset" onclick="resetGrid()">Reset</button>
+    </div>
+
+    <div class="main-container">
+        <div class="grid-container">
+            <h3 id="mode-title">Select a Mode</h3>
+            <div class="grid" id="grid"></div>
+            
+            <div class="legend">
+                <div class="legend-item"><div class="legend-color" style="background:#4285f4"></div> Top Row</div>
+                <div class="legend-item"><div class="legend-color" style="background:#fbbc04"></div> Middle Cell</div>
+                <div class="legend-item"><div class="legend-color" style="background:#34a853"></div> Bottom Row</div>
+                <div class="legend-item"><div class="legend-color" style="background:#fce8e6"></div> Skipped/Checked Top-Lefts</div>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <h3>Traversal Stats</h3>
+            <div class="status-box" id="stat-pos">Top-Left Corner: (row -, col -)</div>
+            <div class="status-box" id="stat-count">Hourglasses Checked: 0 / 16</div>
+            <div class="status-box" id="stat-sum">Current Sum: -</div>
+            <div class="status-box" id="stat-max">Max Sum Found: -</div>
+            <div class="status-box" style="height: 80px; overflow-y: auto;" id="logs">Ready to run...</div>
+        </div>
+    </div>
+
+    <script>
+        const sampleGrid = [
+            [ 1,  1,  1,  0,  0,  0],
+            [ 0,  1,  0,  0,  0,  0],
+            [ 1,  1,  1,  0,  0,  0],
+            [ 0,  0,  2,  4,  4,  0],
+            [ 0,  0,  0,  2,  0,  0],
+            [ 0,  0,  1,  2,  4,  0]
+        ];
+
+        let animationTimer = null;
+
+        function createGrid() {
+            const gridEl = document.getElementById('grid');
+            gridEl.innerHTML = '';
+            for (let r = 0; r < 6; r++) {
+                for (let c = 0; c < 6; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.id = `cell-${r}-${c}`;
+                    cell.textContent = sampleGrid[r][c];
+                    gridEl.appendChild(cell);
+                }
+            }
+        }
+
+        function clearHighlights() {
+            for (let r = 0; r < 6; r++) {
+                for (let c = 0; c < 6; c++) {
+                    const cell = document.getElementById(`cell-${r}-${c}`);
+                    cell.className = 'cell';
+                }
+            }
+        }
+
+        function resetGrid() {
+            if (animationTimer) clearInterval(animationTimer);
+            clearHighlights();
+            document.getElementById('mode-title').textContent = "Select a Mode";
+            document.getElementById('stat-pos').textContent = "Top-Left Corner: (row -, col -)";
+            document.getElementById('stat-count').textContent = "Hourglasses Checked: 0 / 16";
+            document.getElementById('stat-sum').textContent = "Current Sum: -";
+            document.getElementById('stat-max').textContent = "Max Sum Found: -";
+            document.getElementById('logs').textContent = "Ready to run...";
+        }
+
+        function highlightHourglass(r, c) {
+            clearHighlights();
+
+            // Mark top-left
+            document.getElementById(`cell-${r}-${c}`).classList.add('active-top-left');
+
+            // Top row
+            document.getElementById(`cell-${r}-${c}`).classList.add('hourglass-top');
+            document.getElementById(`cell-${r}-${c+1}`).classList.add('hourglass-top');
+            document.getElementById(`cell-${r}-${c+2}`).classList.add('hourglass-top');
+
+            // Mid
+            document.getElementById(`cell-${r+1}-${c+1}`).classList.add('hourglass-mid');
+
+            // Bot
+            document.getElementById(`cell-${r+2}-${c}`).classList.add('hourglass-bot');
+            document.getElementById(`cell-${r+2}-${c+1}`).classList.add('hourglass-bot');
+            document.getElementById(`cell-${r+2}-${c+2}`).classList.add('hourglass-bot');
+        }
+
+        function calculateSum(r, c) {
+            const top = sampleGrid[r][c] + sampleGrid[r][c+1] + sampleGrid[r][c+2];
+            const mid = sampleGrid[r+1][c+1];
+            const bot = sampleGrid[r+2][c] + sampleGrid[r+2][c+1] + sampleGrid[r+2][c+2];
+            return top + mid + bot;
+        }
+
+        function runYourLogic() {
+            resetGrid();
+            document.getElementById('mode-title').textContent = "Your Logic (Diagonal Traversal)";
+            
+            // In your code: x, y = 0, 0 ; while y < 4: x+=1; y+=1
+            const steps = [
+                {r: 0, c: 0},
+                {r: 1, c: 1},
+                {r: 2, c: 2},
+                {r: 3, c: 3}
+            ];
+
+            let index = 0;
+            let maxFound = -Infinity;
+            const logs = document.getElementById('logs');
+            logs.innerHTML = "Starting single while-loop (x+=1, y+=1)...<br>";
+
+            animationTimer = setInterval(() => {
+                if (index >= steps.length) {
+                    clearInterval(animationTimer);
+                    logs.innerHTML += "<b style='color:#d93025;'>Loop ended! Only checked 4 diagonal hourglasses out of 16.</b>";
+                    return;
+                }
+
+                const {r, c} = steps[index];
+                highlightHourglass(r, c);
+
+                const currentSum = calculateSum(r, c);
+                maxFound = Math.max(maxFound, currentSum);
+
+                document.getElementById('stat-pos').textContent = `Top-Left Corner: (row ${r}, col ${c})`;
+                document.getElementById('stat-count').textContent = `Hourglasses Checked: ${index + 1} / 16`;
+                document.getElementById('stat-sum').textContent = `Current Sum: ${currentSum}`;
+                document.getElementById('stat-max').textContent = `Max Sum Found: ${maxFound}`;
+
+                logs.innerHTML += `Checked top-left (${r},${c}) => Sum = ${currentSum}<br>`;
+                logs.scrollTop = logs.scrollHeight;
+
+                index++;
+            }, 1000);
+        }
+
+        function runCorrectLogic() {
+            resetGrid();
+            document.getElementById('mode-title').textContent = "Correct Logic (Nested Loop)";
+
+            const steps = [];
+            for (let r = 0; r < 4; r++) {
+                for (let c = 0; c < 4; c++) {
+                    steps.push({r, c});
+                }
+            }
+
+            let index = 0;
+            let maxFound = -Infinity;
+            const logs = document.getElementById('logs');
+            logs.innerHTML = "Starting nested loop (row 0..3, col 0..3)...<br>";
+
+            animationTimer = setInterval(() => {
+                if (index >= steps.length) {
+                    clearInterval(animationTimer);
+                    logs.innerHTML += "<b style='color:#2d9247;'>Traversal Complete! Checked all 16 hourglasses.</b>";
+                    return;
+                }
+
+                const {r, c} = steps[index];
+                highlightHourglass(r, c);
+
+                const currentSum = calculateSum(r, c);
+                maxFound = Math.max(maxFound, currentSum);
+
+                document.getElementById('stat-pos').textContent = `Top-Left Corner: (row ${r}, col ${c})`;
+                document.getElementById('stat-count').textContent = `Hourglasses Checked: ${index + 1} / 16`;
+                document.getElementById('stat-sum').textContent = `Current Sum: ${currentSum}`;
+                document.getElementById('stat-max').textContent = `Max Sum Found: ${maxFound}`;
+
+                logs.innerHTML += `Checked top-left (${r},${c}) => Sum = ${currentSum}<br>`;
+                logs.scrollTop = logs.scrollHeight;
+
+                index++;
+            }, 400);
+        }
+
+        // Initialize on load
+        createGrid();
+    </script>
+</body>
+</html>
